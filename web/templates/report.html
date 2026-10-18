@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "_components/parts.html" as ui %}
+{% block title %}{{ report.address.address_text }} · {{ product_name }}{% endblock %}
+{% block head %}
+<script defer src="{{ url_for('static', filename='print.js') }}"></script>
+<script defer src="{{ url_for('static', filename='suggest.js') }}"></script>
+<script defer src="{{ url_for('static', filename='compare.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="viewer">
+  {{ ui.app_header(product_name, report, view, band_choices) }}
+
+  <main>
+    <div class="page-caption no-print">
+      <span>{{ report.file_name }}</span>
+      <span>A4 · 1 page</span>
+    </div>
+
+    {# This article is the A4 sheet and is exactly what the print stylesheet
+       keeps, so "Download PDF" is the browser's own print-to-PDF. #}
+    <article class="page">
+      <div class="page-head">
+        <span class="brand"><span class="logo-dot"></span>{{ product_name }}</span>
+        <span class="meta">Address report · {{ report.generated_on.strftime('%d %B %Y') }}</span>
+      </div>
+
+      <section style="display:flex;flex-direction:column;gap:10px">
+        <h1>{{ report.address.address_text }}</h1>
+        <p class="summary">{{ report.summary }}</p>
+      </section>
+
+      <section class="key-figures">
+        {% for figure in report.key_figures %}{{ ui.key_figure(figure) }}{% endfor %}
+      </section>
+
+      <div class="sections">
+        {{ ui.section_schools(report, walk_minutes, school_list_limit) }}
+        {{ ui.section_activity(report) }}
+        {{ ui.section_commute(report) }}
+        {{ ui.section_market(report) }}
+      </div>
+
+      <div class="page-foot">
+        <span>Data: {{ data_sources }}</span>
+        <span>{{ report.address.coordinates_label }}</span>
+        <span>Page 1 / 1</span>
+      </div>
+    </article>
+
+    <ul class="caveats no-print">
+      {% for caveat in report.caveats %}<li>{{ caveat }}</li>{% endfor %}
+    </ul>
+  </main>
+</div>
+{% endblock %}

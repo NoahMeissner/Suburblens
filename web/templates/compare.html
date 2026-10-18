@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% import "_components/parts.html" as ui %}
+{% block title %}Compare · {{ product_name }}{% endblock %}
+{% block head %}
+<script defer src="{{ url_for('static', filename='suggest.js') }}"></script>
+<script defer src="{{ url_for('static', filename='compare.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="viewer">
+  <header class="app-header no-print">
+    <div class="app-header-inner">
+      {{ ui.logo(product_name) }}
+      <a class="address-pill" href="/report?address={{ report_a.address.address_text | urlencode }}">
+        <span>{{ report_a.address.address_text }}</span>
+        <span class="change">Report</span>
+      </a>
+      <a class="address-pill"
+         href="{% if report_b %}/report?address={{ report_b.address.address_text | urlencode }}{% else %}#{% endif %}">
+        <span>{{ report_b.address.address_text if report_b else (query_b or 'Add a second address') }}</span>
+        <span class="change">{{ 'Report' if report_b else 'Add' }}</span>
+      </a>
+      <span class="mono band-caption">{{ report_a.commute.service_band.label }}</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="compare-grid">
+      <section class="compare-column">
+        <h2 class="compare-column-head">{{ report_a.address.address_text }}</h2>
+        <div class="key-figures">
+          {% for figure in report_a.key_figures %}{{ ui.key_figure(figure) }}{% endfor %}
+        </div>
+        {{ ui.section_schools(report_a, walk_minutes, school_list_limit) }}
+        {{ ui.section_activity(report_a) }}
+        {{ ui.section_commute(report_a) }}
+        {{ ui.section_market(report_a) }}
+      </section>
+
+      <section class="compare-column">
+        <h2 class="compare-column-head">
+          {{ report_b.address.address_text if report_b else 'Second address' }}</h2>
+        {% if report_b %}
+          <div class="key-figures">
+            {% for figure in report_b.key_figures %}{{ ui.key_figure(figure) }}{% endfor %}
+          </div>
+          {{ ui.section_schools(report_b, walk_minutes, school_list_limit) }}
+          {{ ui.section_activity(report_b) }}
+          {{ ui.section_commute(report_b) }}
+          {{ ui.section_market(report_b) }}
+        {% else %}
+          <div class="compare-empty">
+            <p class="note">
+              {% if query_b %}No match for "{{ query_b }}". Try again.
+              {% else %}Pick a second address to compare.{% endif %}</p>
+            {{ ui.compare_trigger(report_a, query_b) }}
+          </div>
+        {% endif %}
+      </section>
+    </div>
+  </main>
+</div>
+{% endblock %}

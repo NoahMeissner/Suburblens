@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% import "_components/parts.html" as ui %}
+{% block title %}Top 10 Sydney suburbs · {{ product_name }}{% endblock %}
+
+{% block body %}
+<div class="viewer">
+  <header class="app-header no-print">
+    <div class="app-header-inner">
+      {{ ui.logo(product_name) }}
+      <a class="link" style="margin-left:auto" href="/">Back to start</a>
+    </div>
+  </header>
+
+  <main class="rankings-main">
+    <h1 class="rankings-title">Sydney, top 10</h1>
+    <p class="note">{{ overview.n_suburbs }} suburbs with a geocoded street
+      compared. Every list below is a suburb-level figure, not an
+      address-level one - read the note under each list for exactly what it
+      measures and where it stops.</p>
+
+    <div class="sections rankings-sections">
+      {{ ui.ranking_section('01', 'Most expensive suburbs', 'dot-market',
+          overview.top_expensive,
+          'Median sale price, among the suburbs with enough sales to rank.') }}
+
+      {{ ui.ranking_section('02', 'Quietest suburbs', 'dot-activity',
+          overview.top_quietest,
+          'Fewest scheduled bus trips within 800 m of the suburb centre - the
+           same street-activity proxy the address report uses, not a noise
+           measurement. Suburbs with no bus segment nearby are left out, since
+           that is a data gap, not a quiet suburb.') }}
+
+      {{ ui.ranking_section('03', 'Most schools', 'dot-schools',
+          overview.top_schools,
+          'Schools recorded against the suburb name in the NSW DoE dataset.') }}
+
+      {{ ui.ranking_section('04', 'Most development applications', 'dot-development',
+          overview.top_applications,
+          'Development applications recorded against the suburb name.') }}
+
+      {{ ui.ranking_section('05', 'Fewest development applications', 'dot-development',
+          overview.bottom_applications,
+          'Among suburbs with at least one application - a suburb with none on
+           record is left out, since zero usually means no data reached that
+           name, not zero development.') }}
+    </div>
+  </main>
+</div>
+{% endblock %}
